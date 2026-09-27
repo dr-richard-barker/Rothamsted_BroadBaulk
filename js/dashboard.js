@@ -220,9 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Run
-  if (typeof BK !== 'undefined') {
+  const BK = window.BK || {};
+  if (BK && BK.createTimeSeriesChart) {
     init();
   } else {
-    console.error('BK namespace not found. Make sure shared.js and chart-factory.js are loaded.');
+    setTimeout(init, 50);
   }
 });

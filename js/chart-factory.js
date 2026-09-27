@@ -286,16 +286,16 @@
 
     /* ── Regression Helpers ──────────────────────────────── */
     function linearRegression(points) {
-        // points = [{x, y}, ...]
         if (!points || points.length < 3) return null;
-        const xs = points.map(p => p.x);
-        const ys = points.map(p => p.y);
+        const xs = points.map(p => Array.isArray(p) ? p[0] : (p && p.x !== undefined ? p.x : p[0]));
+        const ys = points.map(p => Array.isArray(p) ? p[1] : (p && p.y !== undefined ? p.y : p[1]));
         const n = xs.length;
         const sumX = xs.reduce((a, b) => a + b, 0);
         const sumY = ys.reduce((a, b) => a + b, 0);
         const sumXY = xs.reduce((a, x, i) => a + x * ys[i], 0);
         const sumX2 = xs.reduce((a, x) => a + x * x, 0);
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const denom = (n * sumX2 - sumX * sumX);
+        const slope = denom !== 0 ? (n * sumXY - sumX * sumY) / denom : 0;
         const intercept = (sumY - slope * sumX) / n;
         // Pearson r
         const meanX = sumX / n;
@@ -303,13 +303,14 @@
         const ssX = xs.reduce((a, x) => a + (x - meanX) ** 2, 0);
         const ssY = ys.reduce((a, y) => a + (y - meanY) ** 2, 0);
         const ssXY = xs.reduce((a, x, i) => a + (x - meanX) * (ys[i] - meanY), 0);
-        const r = ssXY / Math.sqrt(ssX * ssY);
-        return { slope, intercept, r, r2: r * r, n };
+        const rDenom = Math.sqrt(ssX * ssY);
+        const r = rDenom !== 0 ? ssXY / rDenom : 0;
+        return { slope: slope || 0, intercept: intercept || 0, r: r || 0, r2: (r * r) || 0, n };
     }
 
     function regressionLine(points, reg) {
-        if (!reg) return [];
-        const xs = points.map(p => p.x);
+        if (!reg || !points || points.length === 0) return [];
+        const xs = points.map(p => Array.isArray(p) ? p[0] : (p && p.x !== undefined ? p.x : p[0]));
         const minX = Math.min(...xs);
         const maxX = Math.max(...xs);
         return [

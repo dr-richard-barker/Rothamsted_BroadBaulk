@@ -1,7 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait slightly for shared scripts to initialize
-    setTimeout(initCO2Charts, 100);
-});
+(function () {
+    'use strict';
+    const BK = window.BK || {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Wait slightly for shared scripts to initialize
+        setTimeout(initCO2Charts, 50);
+    });
 
 const CO2_DATA = [
   {y:1843,ppm:284},{y:1850,ppm:285},{y:1860,ppm:286},{y:1870,ppm:288},{y:1880,ppm:291},
@@ -199,3 +203,4 @@ function createAttributionBarChart() {
     
     BK.createBarChart('co2AttributionChart', config);
 }
+})();

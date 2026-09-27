@@ -1,4 +1,8 @@
-const THERMAL_SCATTER = [
+(function () {
+    'use strict';
+    const BK = window.BK || {};
+
+    const THERMAL_SCATTER = [
     {decade:'1970s',temp:14.2,tgw:48},{decade:'1970s',temp:14.8,tgw:46},{decade:'1970s',temp:15.0,tgw:45},{decade:'1970s',temp:16.8,tgw:38},
     {decade:'1980s',temp:14.5,tgw:47},{decade:'1980s',temp:14.8,tgw:46},{decade:'1980s',temp:15.2,tgw:44},{decade:'1980s',temp:15.5,tgw:43},
     {decade:'1990s',temp:14.8,tgw:47},{decade:'1990s',temp:15.0,tgw:45},{decade:'1990s',temp:15.5,tgw:44},{decade:'1990s',temp:15.8,tgw:42},
@@ -43,9 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initScatterChart() {
+    const BK = window.BK || {};
     const points = THERMAL_SCATTER.map(d => ({ x: d.temp, y: d.tgw, decade: d.decade }));
-    const reg = BK.linearRegression(points.map(p => [p.x, p.y]));
-    const regLine = BK.regressionLine(points, reg);
+    const reg = BK.linearRegression ? BK.linearRegression(points) : null;
+    const regLine = (BK.regressionLine && reg) ? BK.regressionLine(points, reg) : [];
 
     // Group by decade for different colors
     const decades = [...new Set(THERMAL_SCATTER.map(d => d.decade))];
@@ -59,16 +64,18 @@ function initScatterChart() {
         pointHoverRadius: 8
     }));
 
-    datasets.push({
-        label: `Trend (r=${reg.r.toFixed(2)})`,
-        data: regLine,
-        type: 'line',
-        borderColor: '#111827',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 0,
-        fill: false
-    });
+    if (reg) {
+        datasets.push({
+            label: `Trend (r=${reg.r.toFixed(2)})`,
+            data: regLine,
+            type: 'line',
+            borderColor: '#111827',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+        });
+    }
 
     BK.createScatterChart('thermalScatterChart', {
         data: { datasets },
@@ -138,3 +145,4 @@ function initTempTrendChart() {
         }
     });
 }
+})();
