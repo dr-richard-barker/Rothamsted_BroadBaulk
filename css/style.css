@@ -1,0 +1,125 @@
+/* Broadbalk Explorer - Custom Styles */
+/* Base Tailwind utilities are loaded via CDN; this file handles custom properties and components */
+
+:root {
+    --chart-height: 420px;
+    --chart-height-tall: 520px;
+    --chart-height-short: 300px;
+    --nav-height: 64px;
+}
+
+html { scroll-behavior: smooth; }
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: var(--chart-height);
+}
+.chart-container-tall { height: var(--chart-height-tall); }
+.chart-container-short { height: var(--chart-height-short); }
+
+@media (max-width: 640px) {
+    :root {
+        --chart-height: 300px;
+        --chart-height-tall: 380px;
+        --chart-height-short: 240px;
+    }
+}
+
+/* Fade-in animation */
+.fade-in {
+    animation: fadeIn 0.5s ease-out both;
+}
+.fade-in-delay-1 { animation-delay: 0.1s; }
+.fade-in-delay-2 { animation-delay: 0.2s; }
+.fade-in-delay-3 { animation-delay: 0.3s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Collapsible sections */
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
+    opacity: 0;
+}
+.collapsible-content.open {
+    max-height: 3000px;
+    opacity: 1;
+}
+.collapsible-toggle svg {
+    transition: transform 0.3s ease;
+}
+.collapsible-toggle.open svg {
+    transform: rotate(180deg);
+}
+
+/* Narrative prose styling */
+.narrative-text {
+    line-height: 1.8;
+    font-size: 1.0625rem;
+}
+.narrative-text p { margin-bottom: 1rem; }
+.narrative-text strong { font-weight: 600; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb { background: #57534e; }
+
+/* Hero gradients for each narrative page */
+.hero-dashboard  { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fefce8 100%); }
+.hero-co2        { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fefce8 100%); }
+.hero-thermal    { background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 50%, #fefce8 100%); }
+.hero-genotype   { background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%); }
+.hero-soc        { background: linear-gradient(135deg, #faf5ff 0%, #fef3c7 50%, #f5f5f4 100%); }
+.hero-nutrients  { background: linear-gradient(135deg, #fef2f2 0%, #fefce8 50%, #f0fdf4 100%); }
+.hero-nitrogen   { background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 50%, #fefce8 100%); }
+
+.dark .hero-dashboard  { background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #422006 100%); }
+.dark .hero-co2        { background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #422006 100%); }
+.dark .hero-thermal    { background: linear-gradient(135deg, #431407 0%, #450a0a 50%, #451a03 100%); }
+.dark .hero-genotype   { background: linear-gradient(135deg, #172554 0%, #0c4a6e 50%, #052e16 100%); }
+.dark .hero-soc        { background: linear-gradient(135deg, #2e1065 0%, #451a03 50%, #1c1917 100%); }
+.dark .hero-nutrients  { background: linear-gradient(135deg, #450a0a 0%, #422006 50%, #052e16 100%); }
+.dark .hero-nitrogen   { background: linear-gradient(135deg, #172554 0%, #052e16 50%, #422006 100%); }
+
+/* Stat card hover effect */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1), 0 4px 10px -6px rgba(0,0,0,0.1);
+}
+
+/* Treatment checkbox labels */
+.treatment-checkbox input[type="checkbox"]:checked + span {
+    font-weight: 600;
+}
+
+/* Print styles */
+@media print {
+    nav, .no-print, footer { display: none !important; }
+    .chart-container { break-inside: avoid; page-break-inside: avoid; }
+    body { color: #000 !important; background: #fff !important; }
+}
+
+/* Tooltip for data points */
+.data-tooltip {
+    position: absolute;
+    padding: 8px 12px;
+    background: rgba(28, 25, 23, 0.92);
+    color: #fafaf9;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}

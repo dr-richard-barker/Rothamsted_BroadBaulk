@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Access & Downloads — Broadbalk Explorer</title>
+    <meta name="description" content="Direct links, DOIs, and programmatic access to all Broadbalk open datasets.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen">
+    <nav id="main-nav"></nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-br from-stone-800 to-stone-900 rounded-3xl p-8 md:p-12 text-white shadow-xl fade-in">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Data Access & Downloads</h1>
+                <p class="text-xl text-stone-300">Direct links, DOIs, and programmatic access to all Broadbalk open datasets</p>
+            </div>
+        </section>
+
+        <!-- Datasets Table -->
+        <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 fade-in" style="animation-delay: 0.1s">
+            <h2 class="text-2xl font-bold mb-6">Open Access Datasets</h2>
+            <div class="overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-700">
+                <table class="min-w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-stone-100 dark:bg-stone-900 text-stone-700 dark:text-stone-300">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold border-b border-stone-200 dark:border-stone-700">Dataset</th>
+                            <th class="px-6 py-4 font-semibold border-b border-stone-200 dark:border-stone-700">DOI</th>
+                            <th class="px-6 py-4 font-semibold border-b border-stone-200 dark:border-stone-700">Time Range</th>
+                            <th class="px-6 py-4 font-semibold border-b border-stone-200 dark:border-stone-700">Key Variables</th>
+                            <th class="px-6 py-4 font-semibold border-b border-stone-200 dark:border-stone-700">Format</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-200 dark:divide-stone-700 text-stone-600 dark:text-stone-400">
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Wheat Yields 1852-1925</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-1796346264-1" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-1796346264-1</a></td>
+                            <td class="px-6 py-3">1852-1925</td>
+                            <td class="px-6 py-3">Grain/straw yield</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Wheat Yields 1926-1967</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-yld2667-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-yld2667-01</a></td>
+                            <td class="px-6 py-3">1926-1967</td>
+                            <td class="px-6 py-3">Grain/straw yield, fallow</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Wheat Yields 1968-2022</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-yld6822-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-yld6822-01</a></td>
+                            <td class="px-6 py-3">1968-2022</td>
+                            <td class="px-6 py-3">Grain/straw yield, section, cultivar</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Mean Long-Term Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1/meanWWYields1852-2022-03" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1/meanWWYields1852-2022-03</a></td>
+                            <td class="px-6 py-3">1852-2022</td>
+                            <td class="px-6 py-3">Epoch means</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Fisher 1921 Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-data-fisher-1921-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-data-fisher-1921-01</a></td>
+                            <td class="px-6 py-3">1852-1918</td>
+                            <td class="px-6 py-3">Historical yields</td>
+                            <td class="px-6 py-3">CSV</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Grain Micronutrients</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-trace2005-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-trace2005-01</a></td>
+                            <td class="px-6 py-3">1845-2005</td>
+                            <td class="px-6 py-3">Zn, Fe, Cu, Se, Mg</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Crop Nutrients</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-BKNUTRW-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-BKNUTRW-01</a></td>
+                            <td class="px-6 py-3">1968-2017</td>
+                            <td class="px-6 py-3">%N, %P, %K, %Ca, %Mg, %S</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">SOC 1843-2015</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/KeyRefOABKsoc-02" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/KeyRefOABKsoc-02</a></td>
+                            <td class="px-6 py-3">1843-2015</td>
+                            <td class="px-6 py-3">SOC t C/ha</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Soil Properties</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-bksoils-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-bksoils-01</a></td>
+                            <td class="px-6 py-3">1843-2021</td>
+                            <td class="px-6 py-3">%SOC, %N, pH, Olsen P</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">FYM Composition</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-FYM-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-FYM-01</a></td>
+                            <td class="px-6 py-3">Various</td>
+                            <td class="px-6 py-3">DM%, N, P, K</td>
+                            <td class="px-6 py-3">CSV, XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Monthly Rainfall</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rmsTMArain1853-2024-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rmsTMArain1853-2024-01</a></td>
+                            <td class="px-6 py-3">1853-2024</td>
+                            <td class="px-6 py-3">Monthly/annual rain (mm)</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Air Temperature</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rmsMAAirTemp1878-2024-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rmsMAAirTemp1878-2024-01</a></td>
+                            <td class="px-6 py-3">1878-2024</td>
+                            <td class="px-6 py-3">Monthly/annual T (°C)</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Sunshine Hours</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rmsTMASunHours1891-2024-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rmsTMASunHours1891-2024-01</a></td>
+                            <td class="px-6 py-3">1891-2024</td>
+                            <td class="px-6 py-3">Monthly/annual hours</td>
+                            <td class="px-6 py-3">XLSX</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Oat Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-oatyld9622-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-oatyld9622-01</a></td>
+                            <td class="px-6 py-3">1996-2022</td>
+                            <td class="px-6 py-3">Break crop yields</td>
+                            <td class="px-6 py-3">CSV</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Bean Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-beanyld6822-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-beanyld6822-01</a></td>
+                            <td class="px-6 py-3">1968-2022</td>
+                            <td class="px-6 py-3">Break crop yields</td>
+                            <td class="px-6 py-3">CSV</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors bg-stone-50/50 dark:bg-stone-800/30">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Maize Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-fmyield9717-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-fmyield9717-01</a></td>
+                            <td class="px-6 py-3">1997-2017</td>
+                            <td class="px-6 py-3">Break crop yields</td>
+                            <td class="px-6 py-3">CSV</td>
+                        </tr>
+                        <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-stone-900 dark:text-stone-200">Potato Yields</td>
+                            <td class="px-6 py-3"><a href="https://doi.org/10.23637/rbk1-potyld6896-01" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">10.23637/rbk1-potyld6896-01</a></td>
+                            <td class="px-6 py-3">1968-1996</td>
+                            <td class="px-6 py-3">Break crop yields</td>
+                            <td class="px-6 py-3">CSV</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 fade-in" style="animation-delay: 0.2s">
+            <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    Programmatic Access (Python)
+                </h3>
+                <div class="bg-stone-900 rounded-lg p-4 font-mono text-sm overflow-x-auto text-stone-300">
+<pre><code><span class="text-pink-400">import</span> pandas <span class="text-pink-400">as</span> pd
+
+<span class="text-stone-500"># URL direct to the CSV endpoint from DOI resolver</span>
+url = <span class="text-green-400">'https://doi.org/10.23637/rbk1-yld6822-01'</span>
+
+<span class="text-stone-500"># Load dataset directly into a DataFrame</span>
+df = pd.read_csv(url)
+
+<span class="text-stone-500"># View first records</span>
+<span class="text-blue-400">print</span>(df.head())</code></pre>
+                </div>
+            </section>
+
+            <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    Programmatic Access (R)
+                </h3>
+                <div class="bg-stone-900 rounded-lg p-4 font-mono text-sm overflow-x-auto text-stone-300">
+<pre><code><span class="text-blue-400">library</span>(readr)
+
+<span class="text-stone-500"># Read directly from DOI</span>
+df <- read_csv(<span class="text-green-400">'https://doi.org/10.23637/rbk1-yld6822-01'</span>)
+
+<span class="text-stone-500"># View structure</span>
+<span class="text-blue-400">str</span>(df)</code></pre>
+                </div>
+            </section>
+        </div>
+
+        <!-- Custom Requests & Attribution -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 fade-in" style="animation-delay: 0.3s">
+            <section class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-6 shadow-sm border border-emerald-100 dark:border-emerald-800/30">
+                <h3 class="text-lg font-bold text-emerald-800 dark:text-emerald-400 mb-2">Custom Data Requests</h3>
+                <p class="text-stone-600 dark:text-stone-400 mb-4 text-sm leading-relaxed">
+                    Can't find what you're looking for? Researchers can request access to unpublished raw data, archive samples (soil and crop), or customized datasets.
+                </p>
+                <a href="mailto:era@rothamsted.ac.uk" class="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium hover:underline">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    era@rothamsted.ac.uk
+                </a>
+            </section>
+
+            <section class="bg-stone-100 dark:bg-stone-800/50 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <h3 class="text-lg font-bold mb-2">License & Attribution</h3>
+                <p class="text-stone-600 dark:text-stone-400 text-sm leading-relaxed mb-4">
+                    All datasets are provided under a <a href="https://creativecommons.org/licenses/by/4.0/" class="text-emerald-600 dark:text-emerald-400 hover:underline" target="_blank">Creative Commons Attribution 4.0 International License (CC BY 4.0)</a>.
+                </p>
+                <p class="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
+                    When using these datasets, please cite both the original Broadbalk experiment and the specific dataset DOI provided in the table above.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+</body>
+</html>

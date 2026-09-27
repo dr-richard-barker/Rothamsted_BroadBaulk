@@ -1,0 +1,12 @@
+[
+  {"start": 1843, "end": 1900, "cultivar": "Red Club / Red Rostock", "type": "landrace", "height_cm": "130-150", "straw": "tall", "hi": 0.32, "color": "#fef3c7", "notes": "Traditional tall landraces, weak straw, severe lodging above 48 kg N/ha"},
+  {"start": 1901, "end": 1927, "cultivar": "Squarehead's Master", "type": "selection", "height_cm": "120-140", "straw": "tall", "hi": 0.34, "color": "#fde68a", "notes": "Improved tillering but still tall; yield ceiling ~2.5-3.5 t/ha due to lodging"},
+  {"start": 1928, "end": 1939, "cultivar": "Little Joss", "type": "bred", "height_cm": "110-130", "straw": "tall", "hi": 0.36, "color": "#fcd34d", "notes": "Bred by Biffen at PBI Cambridge; slightly improved straw strength"},
+  {"start": 1940, "end": 1967, "cultivar": "Cappelle-Desprez", "type": "bred", "height_cm": "100-120", "straw": "tall", "hi": 0.38, "color": "#fbbf24", "notes": "French variety, better disease resistance; also Holdfast and Redman used in some years"},
+  {"start": 1968, "end": 1978, "cultivar": "Cappelle-Desprez", "type": "semi-dwarf", "height_cm": "85-95", "straw": "short", "hi": 0.42, "color": "#bfdbfe", "notes": "1968 watershed: 10-section redesign, semi-dwarf era begins, N₄ introduced"},
+  {"start": 1979, "end": 1984, "cultivar": "Flanders", "type": "semi-dwarf", "height_cm": "80-90", "straw": "short", "hi": 0.44, "color": "#93c5fd", "notes": "Summer fungicides introduced 1979; improved disease control"},
+  {"start": 1985, "end": 1990, "cultivar": "Brimstone", "type": "semi-dwarf", "height_cm": "75-85", "straw": "short", "hi": 0.46, "color": "#60a5fa", "notes": "N₅ (240 kg) and N₆ (288 kg N/ha) added 1985; 1988-1990 direct comparison with Squarehead's Master"},
+  {"start": 1991, "end": 1995, "cultivar": "Apollo", "type": "modern", "height_cm": "75-85", "straw": "short", "hi": 0.48, "color": "#3b82f6", "notes": "Modern semi-dwarf, high nitrogen utilization efficiency"},
+  {"start": 1996, "end": 2012, "cultivar": "Hereward", "type": "modern", "height_cm": "75-80", "straw": "short", "hi": 0.50, "color": "#2563eb", "notes": "UK breadmaking standard for 17 years; yields 8-11 t/ha on optimal treatments"},
+  {"start": 2013, "end": 2022, "cultivar": "Crusoe", "type": "modern", "height_cm": "70-80", "straw": "short", "hi": 0.52, "color": "#1d4ed8", "notes": "Set Broadbalk all-time record of 13.8 t/ha in 2014"}
+]

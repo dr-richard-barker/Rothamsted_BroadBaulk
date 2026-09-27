@@ -1,0 +1,14 @@
+{
+  "03":   {"name": "Nil (Unmanured)", "shortName": "Nil", "n_kg": 0, "fym": false, "pkm": false, "color": "#6b7280", "since": 1852},
+  "05":   {"name": "PKMg only (N₀)", "shortName": "PKMg", "n_kg": 0, "fym": false, "pkm": true, "color": "#a855f7", "since": 1852},
+  "06":   {"name": "N₁PKMg (48 kg N/ha)", "shortName": "N₁", "n_kg": 48, "fym": false, "pkm": true, "color": "#3b82f6", "since": 1852},
+  "07":   {"name": "N₂PKMg (96 kg N/ha)", "shortName": "N₂", "n_kg": 96, "fym": false, "pkm": true, "color": "#06b6d4", "since": 1852},
+  "08":   {"name": "N₃PKMg (144 kg N/ha)", "shortName": "N₃", "n_kg": 144, "fym": false, "pkm": true, "color": "#22c55e", "since": 1852},
+  "09":   {"name": "N₄PKMg (192 kg N/ha)", "shortName": "N₄", "n_kg": 192, "fym": false, "pkm": true, "color": "#eab308", "since": 1968},
+  "15":   {"name": "N₅PKMg (240 kg N/ha)", "shortName": "N₅", "n_kg": 240, "fym": false, "pkm": true, "color": "#f97316", "since": 1985},
+  "16":   {"name": "N₆PKMg (288 kg N/ha)", "shortName": "N₆", "n_kg": 288, "fym": false, "pkm": true, "color": "#ef4444", "since": 1985},
+  "2.1":  {"name": "FYM + N₂ (96 kg N/ha)", "shortName": "FYM+N", "n_kg": 96, "fym": true, "pkm": false, "color": "#854d0e", "since": 1968},
+  "2.2":  {"name": "FYM (35 t/ha)", "shortName": "FYM", "n_kg": 0, "fym": true, "pkm": false, "color": "#a16207", "since": 1843},
+  "10":   {"name": "N₂ only (no PKMg)", "shortName": "N₂ only", "n_kg": 96, "fym": false, "pkm": false, "color": "#78716c", "since": 1852},
+  "20":   {"name": "N₂KMg (no P)", "shortName": "No P", "n_kg": 96, "fym": false, "pkm": false, "color": "#a3a3a3", "since": 1852}
+}

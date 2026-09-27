@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micronutrient Dilution — Broadbalk Explorer</title>
+    <meta name="description" content="The hidden hunger cost of high-yielding wheat: Micronutrient dilution in the Broadbalk experiment.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-nutrients { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); color: white; }
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen">
+    <nav id="main-nav"></nav>
+
+    <main class="fade-in">
+        <!-- Hero Section -->
+        <section class="hero-nutrients py-16 px-6 sm:px-12 lg:px-24">
+            <div class="max-w-7xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Micronutrient Dilution</h1>
+                <p class="text-xl md:text-2xl font-light mb-8 opacity-90">The hidden hunger cost of high-yielding wheat</p>
+                <div class="bg-blue-900/40 border border-blue-700/50 rounded-lg p-6 mb-10 max-w-3xl">
+                    <p class="text-xl font-medium text-blue-50">Grain zinc dropped 25-30% after 1968 — while soil zinc stayed stable</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-black/20 p-6 rounded-lg border border-white/10">
+                        <div class="text-3xl font-bold text-red-400 mb-1">-25 to 30%</div>
+                        <div class="text-sm font-medium text-stone-400 mb-2">Zinc decline post-1968</div>
+                        <div class="text-xs text-stone-500">From ~40 to ~25 mg/kg</div>
+                    </div>
+                    <div class="bg-black/20 p-6 rounded-lg border border-white/10">
+                        <div class="text-3xl font-bold text-orange-400 mb-1">-20 to 25%</div>
+                        <div class="text-sm font-medium text-stone-400 mb-2">Iron decline post-1968</div>
+                        <div class="text-xs text-stone-500">From ~55 to ~38 mg/kg</div>
+                    </div>
+                    <div class="bg-black/20 p-6 rounded-lg border border-white/10">
+                        <div class="text-3xl font-bold text-emerald-400 mb-1">Stable</div>
+                        <div class="text-sm font-medium text-stone-400 mb-2">Soil mineral levels</div>
+                        <div class="text-xs text-stone-500">Not soil exhaustion</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 py-12">
+            <!-- Collapsible Context -->
+            <details class="group bg-white dark:bg-stone-800 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 mb-12" open>
+                <summary class="cursor-pointer p-6 font-semibold text-lg flex justify-between items-center">
+                    Why This Matters
+                    <span class="transition group-open:rotate-180">
+                        <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                </summary>
+                <div class="p-6 pt-0 text-stone-600 dark:text-stone-300 leading-relaxed border-t border-stone-100 dark:border-stone-700 mt-2">
+                    <p class="mt-4">The Rothamsted Sample Archive contains 300,000+ sealed jars from 1843. Fan et al. (2008) analyzed these and found grain minerals were stable for 120 years, then collapsed exactly when semi-dwarf cultivars were introduced in 1968. Root uptake couldn't match rapid starch accumulation. Selenium followed a different pattern driven by SO₂ emissions.</p>
+                </div>
+            </details>
+
+            <!-- Main Interactive Chart -->
+            <section class="mb-16">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2">Grain Yield vs. Nutrient Concentration (1845-2005)</h2>
+                        <p class="text-sm text-stone-500 dark:text-stone-400">Yield on the left axis, nutrient concentration on the right axis.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex space-x-2">
+                        <button class="nutr-btn bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium transition hover:bg-blue-700" data-nutrient="zn">Zinc (Zn)</button>
+                        <button class="nutr-btn bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200 px-4 py-2 rounded text-sm font-medium transition hover:bg-stone-300 dark:hover:bg-stone-600" data-nutrient="fe">Iron (Fe)</button>
+                        <button class="nutr-btn bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200 px-4 py-2 rounded text-sm font-medium transition hover:bg-stone-300 dark:hover:bg-stone-600" data-nutrient="cu">Copper (Cu)</button>
+                        <button class="nutr-btn bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200 px-4 py-2 rounded text-sm font-medium transition hover:bg-stone-300 dark:hover:bg-stone-600" data-nutrient="mg">Magnesium (Mg)</button>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-stone-800 p-6 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="chart-container relative h-[400px] w-full">
+                        <canvas id="nutrientMainChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secondary Charts & Insets -->
+            <section class="mb-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Soil vs. Grain Comparison</h3>
+                    <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Stable soil minerals vs dropping grain levels (Pre-1968 vs Post-1968)</p>
+                    <div class="bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700">
+                        <div class="chart-container relative h-[300px] w-full">
+                            <canvas id="soilVsGrainChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Selenium Anomaly</h3>
+                    <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Selenium concentrations track UK SO₂ atmospheric emissions rather than yield dilution.</p>
+                    <div class="bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700">
+                        <div class="chart-container relative h-[300px] w-full flex items-center justify-center bg-stone-50 dark:bg-stone-900 border border-dashed border-stone-300 dark:border-stone-600">
+                            <!-- Placeholder or custom Se chart -->
+                            <div class="text-center p-6">
+                                <svg class="w-12 h-12 text-blue-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                                <h4 class="font-medium text-stone-700 dark:text-stone-300">SO₂ Deposition Pattern</h4>
+                                <p class="text-xs text-stone-500 mt-2">Peak emissions in 1970s correspond to changes in selenium availability to crops due to soil acidification and competing sulfur.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Methodology & References -->
+            <details class="group bg-stone-100 dark:bg-stone-800/50 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 mb-8">
+                <summary class="cursor-pointer p-4 font-semibold text-md flex justify-between items-center">
+                    Methodology & References
+                    <span class="transition group-open:rotate-180">
+                        <svg fill="none" height="20" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="20"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                </summary>
+                <div class="p-4 pt-0 text-sm text-stone-600 dark:text-stone-400 border-t border-stone-200 dark:border-stone-700 mt-2">
+                    <ul class="list-disc pl-5 mt-2 space-y-2">
+                        <li>Fan, M. S., Zhao, F. J., Fairweather-Tait, S. J., Poulton, P. R., Dunham, S. J., & McGrath, S. P. (2008). Evidence of decreasing mineral density in wheat grain over the last 160 years. <em>Journal of Trace Elements in Medicine and Biology</em>, 22(4), 315-324.</li>
+                        <li>Myers, S. S., Zanobetti, A., Kloog, I., Huybers, P., Leakey, A. D., Bloom, A. J., ... & Usui, Y. (2014). Increasing CO2 threatens human nutrition. <em>Nature</em>, 510(7503), 139-142.</li>
+                        <li>Loladze, I. (2002). Rising atmospheric CO2 and human nutrition: toward globally imbalanced plant stoichiometry? <em>Trends in Ecology & Evolution</em>, 17(10), 457-461.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+    <script src="js/nutrients.js"></script>
+</body>
+</html>

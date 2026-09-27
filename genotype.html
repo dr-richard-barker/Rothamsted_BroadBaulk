@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genotype & Cultivar Effects — Broadbalk Explorer</title>
+    <meta name="description" content="The Green Revolution on Broadbalk — from landraces to modern semi-dwarfs.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-genotype { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); }
+        .chart-container { position: relative; height: 400px; width: 100%; }
+        .chart-container-tall { position: relative; height: 500px; width: 100%; }
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen">
+    <nav id="main-nav"></nav>
+
+    <!-- Hero Section -->
+    <header class="hero-genotype py-16 px-4 border-b border-stone-200 dark:border-stone-800 fade-in">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-emerald-600 dark:text-emerald-400">Genotype & Cultivar Effects</h1>
+            <p class="text-xl md:text-2xl mb-8 text-stone-600 dark:text-stone-300">The Green Revolution on Broadbalk — from landraces to modern semi-dwarfs</p>
+            
+            <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-emerald-200 dark:border-emerald-900/30 mb-8 inline-block">
+                <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">88% of UK wheat yield gains since 1982 are purely genetic</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-emerald-500 mb-2">32% → 52%</div>
+                    <div class="text-sm font-semibold text-stone-700 dark:text-stone-300">Harvest Index evolution</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">More grain, same biomass</div>
+                </div>
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-emerald-500 mb-2">2× yield</div>
+                    <div class="text-sm font-semibold text-stone-700 dark:text-stone-300">Modern vs. traditional at high N</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">1988-1990 trial</div>
+                </div>
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-emerald-500 mb-2">13.8 t/ha</div>
+                    <div class="text-sm font-semibold text-stone-700 dark:text-stone-300">All-time Broadbalk record</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">Crusoe, 2014</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 fade-in">
+        <!-- Context Panel -->
+        <section class="mb-16">
+            <details class="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 group">
+                <summary class="cursor-pointer p-6 font-semibold text-lg flex justify-between items-center">
+                    Why This Matters
+                    <span class="transform group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="p-6 pt-0 text-stone-600 dark:text-stone-300 space-y-4">
+                    <p>Broadbalk intentionally updates cultivars to reflect British farming practice. In 1968, the field was redesigned: traditional long-straw varieties were replaced with semi-dwarf cultivars carrying Rht dwarfing genes.</p>
+                    <p>Austin et al. (1980) showed total biomass hadn't changed — yield gain came entirely from harvest index. Mackay et al. (2011) showed 88% of post-1982 yield gain was genetic.</p>
+                </div>
+            </details>
+        </section>
+
+        <!-- Main Chart -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Full Yield Timeline with Cultivar Eras (Plot 08)</h2>
+            <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <p class="mb-4 text-stone-600 dark:text-stone-400">Plot 08 Yield (1852-2022) highlighting the impact of modern varieties.</p>
+                <div class="chart-container-tall">
+                    <canvas id="yieldTimelineChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <section>
+                <h3 class="text-xl font-bold mb-4">Harvest Index Evolution</h3>
+                <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <p class="mb-4 text-sm text-stone-500">The fraction of total biomass allocated to grain</p>
+                    <div class="chart-container">
+                        <canvas id="harvestIndexChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3 class="text-xl font-bold mb-4">1988-1990 Head-to-Head Trial</h3>
+                <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <p class="mb-4 text-sm text-stone-500">Squarehead's Master (Traditional) vs. Brimstone (Modern) at varying N rates</p>
+                    <div class="chart-container">
+                        <canvas id="headToHeadChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Yield Ceiling by Era -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Yield Ceiling by Era</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-4 text-center">
+                    <div class="text-sm text-stone-500">Pre-1968 (Long-straw)</div>
+                    <div class="font-bold text-2xl text-stone-800 dark:text-stone-200">2 - 3 t/ha</div>
+                </div>
+                <div class="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 text-center">
+                    <div class="text-sm text-stone-500">1968-1985 (Early Dwarfs)</div>
+                    <div class="font-bold text-2xl text-emerald-700 dark:text-emerald-400">4 - 6 t/ha</div>
+                </div>
+                <div class="bg-emerald-100 dark:bg-emerald-900/20 border border-emerald-300 dark:border-emerald-700 rounded-xl p-4 text-center">
+                    <div class="text-sm text-stone-500">1985-2000 (Mid-Modern)</div>
+                    <div class="font-bold text-2xl text-emerald-800 dark:text-emerald-300">7 - 9 t/ha</div>
+                </div>
+                <div class="bg-emerald-200 dark:bg-emerald-900/30 border border-emerald-400 dark:border-emerald-600 rounded-xl p-4 text-center">
+                    <div class="text-sm text-stone-500">Post-2000 (Current)</div>
+                    <div class="font-bold text-2xl text-emerald-900 dark:text-emerald-200">10+ t/ha</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodology & References -->
+        <section>
+            <details class="bg-stone-100 dark:bg-stone-800/50 rounded-xl border border-stone-200 dark:border-stone-700 group">
+                <summary class="cursor-pointer p-4 font-semibold flex justify-between items-center text-sm">
+                    Methodology & References
+                    <span class="transform group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="p-4 pt-0 text-sm text-stone-600 dark:text-stone-400 space-y-2">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Austin et al. (1980) - Genetic improvements in winter wheat yields since 1900 and associated physiological changes.</li>
+                        <li>Mackay et al. (2011) - Reassessing the recent yield progress of winter wheat in the UK.</li>
+                        <li>Broadbalk Guide - Rothamsted Research.</li>
+                    </ul>
+                </div>
+            </details>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+    <script src="js/genotype.js"></script>
+</body>
+</html>

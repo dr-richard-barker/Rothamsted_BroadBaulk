@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal & Climate Effects — Broadbalk Explorer</title>
+    <meta name="description" content="How heat stress threatens grain fill and the emerging anthesis risk at Rothamsted Broadbalk.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-thermal { background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%); }
+        .chart-container { position: relative; height: 400px; width: 100%; }
+        .chart-container-tall { position: relative; height: 500px; width: 100%; }
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen">
+    <nav id="main-nav"></nav>
+
+    <!-- Hero Section -->
+    <header class="hero-thermal py-16 px-4 border-b border-stone-200 dark:border-stone-800 fade-in">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-orange-600 dark:text-orange-400">Thermal & Climate Effects</h1>
+            <p class="text-xl md:text-2xl mb-8 text-stone-600 dark:text-stone-300">How heat stress threatens grain fill and the emerging anthesis risk</p>
+            
+            <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-orange-200 dark:border-orange-900/30 mb-8 inline-block">
+                <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">Grain weight drops 4-8% per 1°C warming during grain fill</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-red-500 mb-2">+1.2°C</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">Rothamsted warming since 1878</div>
+                </div>
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-red-500 mb-2">+77%</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">Projected heat stress yield loss by 2090</div>
+                </div>
+                <div class="bg-white/80 dark:bg-stone-800/80 backdrop-blur rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="text-3xl font-bold text-red-500 mb-2">>30% drop</div>
+                    <div class="text-sm text-stone-500 dark:text-stone-400">Yield decline in heatwave years (1976, 2003, 2018, 2022)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 fade-in">
+        <!-- Context Panel -->
+        <section class="mb-16">
+            <details class="bg-white dark:bg-stone-800 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 group">
+                <summary class="cursor-pointer p-6 font-semibold text-lg flex justify-between items-center">
+                    Why This Matters
+                    <span class="transform group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="p-6 pt-0 text-stone-600 dark:text-stone-300 space-y-4">
+                    <p>Rothamsted hosts the longest continuous daily met record in the UK (since 1853). Warming has been ~1.2°C. For winter wheat, heat stress around anthesis (flowering, late May-mid June) and during grain filling (June-July) is the most dangerous climatic bottleneck.</p>
+                    <p>Temperatures exceeding 25-27°C cause pollen sterility. Warmer temperatures also shorten the grain-filling duration, leading to smaller, lighter grains and significantly reducing overall yield.</p>
+                </div>
+            </details>
+        </section>
+
+        <!-- Main Chart -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Temperature Impact on Grain Weight</h2>
+            <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <p class="mb-4 text-stone-600 dark:text-stone-400">Post-anthesis mean temperature (June-July mean °C) vs. Thousand Grain Weight proxy (g).</p>
+                <div class="chart-container-tall">
+                    <canvas id="thermalScatterChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Critical Thresholds Panel -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Temperature Danger Zones</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+                    <div class="font-bold text-emerald-700 dark:text-emerald-400 text-xl mb-1">&lt;20°C</div>
+                    <div class="text-emerald-600 dark:text-emerald-500">Safe zone for grain fill</div>
+                </div>
+                <div class="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+                    <div class="font-bold text-yellow-700 dark:text-yellow-400 text-xl mb-1">20-25°C</div>
+                    <div class="text-yellow-600 dark:text-yellow-500">Moderate stress, shorter fill duration</div>
+                </div>
+                <div class="bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+                    <div class="font-bold text-orange-700 dark:text-orange-400 text-xl mb-1">&gt;25°C</div>
+                    <div class="text-orange-600 dark:text-orange-500">Severe: pollen sterility risk</div>
+                </div>
+                <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                    <div class="font-bold text-red-700 dark:text-red-400 text-xl mb-1">&gt;30°C</div>
+                    <div class="text-red-600 dark:text-red-500">Extreme: enzymatic breakdown</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <section>
+                <h3 class="text-xl font-bold mb-4">Heat Day Frequency (June-July)</h3>
+                <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="chart-container">
+                        <canvas id="heatDaysChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h3 class="text-xl font-bold mb-4">Annual Mean Temperature Trend</h3>
+                <div class="bg-white dark:bg-stone-800 rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                    <div class="chart-container">
+                        <canvas id="tempTrendChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Methodology & References -->
+        <section>
+            <details class="bg-stone-100 dark:bg-stone-800/50 rounded-xl border border-stone-200 dark:border-stone-700 group">
+                <summary class="cursor-pointer p-4 font-semibold flex justify-between items-center text-sm">
+                    Methodology & References
+                    <span class="transform group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="p-4 pt-0 text-sm text-stone-600 dark:text-stone-400 space-y-2">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Thorne et al. (1988) - Grain growth of winter wheat in response to temperature.</li>
+                        <li>Senapati & Semenov (2021/2022) - Impact of heat stress on wheat yields and projections.</li>
+                        <li>Harkness et al. (2020) - Long-term weather records at Rothamsted.</li>
+                    </ul>
+                </div>
+            </details>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+    <script src="js/thermal.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "0": {"type": "continuous", "description": "Continuous wheat, straw chopped & incorporated (since 1986)", "notes": "Straw incorporation test"},
+    "1": {"type": "continuous", "description": "Continuous wheat, straw baled & removed", "notes": "Primary long-term reference section"},
+    "2": {"type": "rotational", "description": "Rotational section", "notes": "Part of 5-course rotation"},
+    "3": {"type": "rotational", "description": "Rotational section", "notes": "Part of 5-course rotation"},
+    "4": {"type": "rotational", "description": "Rotational section", "notes": "Part of 5-course rotation"},
+    "5": {"type": "rotational", "description": "Rotational section", "notes": "Part of 5-course rotation"},
+    "6": {"type": "continuous", "description": "Rotational 1968-1978; continuous wheat since 1979", "notes": "Converted section"},
+    "7": {"type": "rotational", "description": "Rotational section", "notes": "Part of 5-course rotation"},
+    "8": {"type": "continuous", "description": "Continuous wheat, no herbicides since 1964", "notes": "Weed ecology section; periodic bare fallow"},
+    "9": {"type": "continuous", "description": "Continuous wheat, re-drained 1993", "notes": "Nitrate leaching studies with plot drain interceptors"}
+  },
+  "rotation_history": [
+    {"period": "1968-1978", "sections": [2,3,4,5,7], "design": "3-course: Potatoes → Spring Beans → Winter Wheat"},
+    {"period": "1979-1996", "sections": [2,3,4,5,7], "design": "5-course: Potatoes → WW → WW → WW → Bare Fallow"},
+    {"period": "1997-2017", "sections": [2,3,4,5,7], "design": "5-course: WW → WW → WW → Oats → Forage Maize"},
+    {"period": "2018-present", "sections": [2,3,4,5,7], "design": "5-course: Field Beans → 1st WW → 2nd WW → Oats → 3rd WW"}
+  ]
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadbalk Wheat Experiment — Broadbalk Explorer</title>
+    <meta name="description" content="Exploring 180+ years of the world's longest-running agricultural experiment — continuous wheat since 1843">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen flex flex-col">
+    <nav id="main-nav"></nav>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-b from-stone-200 to-stone-50 dark:from-stone-800 dark:to-stone-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-10 fade-in">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Broadbalk Wheat Experiment</h1>
+                    <p class="text-xl text-stone-600 dark:text-stone-400 max-w-3xl mx-auto">Exploring 180+ years of the world's longest-running agricultural experiment — continuous wheat since 1843</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 fade-in">
+                    <div class="bg-white dark:bg-stone-800 p-6 rounded-lg shadow border border-stone-200 dark:border-stone-700">
+                        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">180+ Years</h3>
+                        <p class="text-sm text-stone-500 dark:text-stone-400">Continuous records since 1843</p>
+                    </div>
+                    <div class="bg-white dark:bg-stone-800 p-6 rounded-lg shadow border border-stone-200 dark:border-stone-700">
+                        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">20 Treatment Plots</h3>
+                        <p class="text-sm text-stone-500 dark:text-stone-400">Comparing fertilizer regimes</p>
+                    </div>
+                    <div class="bg-white dark:bg-stone-800 p-6 rounded-lg shadow border border-stone-200 dark:border-stone-700">
+                        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">10 Sections</h3>
+                        <p class="text-sm text-stone-500 dark:text-stone-400">Continuous vs rotational wheat</p>
+                    </div>
+                    <div class="bg-white dark:bg-stone-800 p-6 rounded-lg shadow border border-stone-200 dark:border-stone-700">
+                        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">13.8 t/ha</h3>
+                        <p class="text-sm text-stone-500 dark:text-stone-400">Record yield (Crusoe, 2014)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Interactive Chart Section -->
+        <section class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto fade-in">
+            <div class="bg-white dark:bg-stone-800 rounded-lg shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                <div class="p-4 sm:p-6 border-b border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <h2 class="text-xl font-semibold">Yield & Climate Explorer</h2>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 items-center w-full md:w-auto">
+                        <div class="flex items-center gap-2">
+                            <label for="climate-select" class="text-sm font-medium">Climate Overlay:</label>
+                            <select id="climate-select" class="bg-white dark:bg-stone-700 border border-stone-300 dark:border-stone-600 text-sm rounded px-3 py-1.5 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="none">None</option>
+                                <option value="rain">Annual Rainfall (mm)</option>
+                                <option value="springRain">Spring Rainfall Apr-Jul (mm)</option>
+                                <option value="summerTemp">Mean Summer Temp (°C)</option>
+                                <option value="gdd">Growing Degree Days (base 0°C)</option>
+                            </select>
+                        </div>
+                        <button id="export-btn" class="text-sm bg-stone-200 hover:bg-stone-300 dark:bg-stone-700 dark:hover:bg-stone-600 px-4 py-1.5 rounded transition-colors whitespace-nowrap">
+                            Download Data (CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row">
+                    <!-- Plot Controls Sidebar -->
+                    <div class="w-full lg:w-64 p-4 sm:p-6 border-r border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/20">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">Treatment Plots</h3>
+                        <div id="plot-controls" class="space-y-3">
+                            <!-- Checkboxes generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div class="flex-grow p-4 sm:p-6 w-full">
+                        <div class="chart-container-tall relative h-[400px] lg:h-[500px] w-full">
+                            <canvas id="dashboard-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Narrative Links Section -->
+        <section class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto fade-in">
+            <h2 class="text-2xl font-bold mb-6 text-center">Deep Dives</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <a href="co2.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-blue-500 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🌬️</span>
+                        <h3 class="text-lg font-semibold group-hover:text-blue-500 transition-colors">CO₂ & Yields</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">+50% CO₂ → only +9% yield boost</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">Discover why historical yield gains haven't matched atmospheric CO2 increases.</p>
+                </a>
+                
+                <!-- Card 2 -->
+                <a href="thermal.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-red-500 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🌡️</span>
+                        <h3 class="text-lg font-semibold group-hover:text-red-500 transition-colors">Thermal Effects</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">Grain weight drops 4-8% per 1°C</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">Extreme heat during grain filling negatively impacts harvest index and grain size.</p>
+                </a>
+
+                <!-- Card 3 -->
+                <a href="genotype.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-emerald-500 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🧬</span>
+                        <h3 class="text-lg font-semibold group-hover:text-emerald-500 transition-colors">Genotype</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">88% of yield gains are genetic</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">How modern short-straw cultivars dramatically increased yields after 1968.</p>
+                </a>
+
+                <!-- Card 4 -->
+                <a href="soc.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-amber-600 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🌱</span>
+                        <h3 class="text-lg font-semibold group-hover:text-amber-600 transition-colors">Soil Carbon</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">FYM tripled soil C to 85 t/ha</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">Farmyard manure maintains and builds soil organic carbon over a century.</p>
+                </a>
+
+                <!-- Card 5 -->
+                <a href="nutrients.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-purple-500 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🔬</span>
+                        <h3 class="text-lg font-semibold group-hover:text-purple-500 transition-colors">Nutrients</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">Grain Zn dropped 25-30% post-1968</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">The hidden cost of high yields: dilution of essential micronutrients in modern wheat.</p>
+                </a>
+
+                <!-- Card 6 -->
+                <a href="nitrogen.html" class="block bg-white dark:bg-stone-800 rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-l-cyan-500 p-5 group">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🧪</span>
+                        <h3 class="text-lg font-semibold group-hover:text-cyan-500 transition-colors">Nitrogen</h3>
+                    </div>
+                    <p class="text-xl font-bold text-stone-700 dark:text-stone-200 mb-2">58→6 kg grain per kg N</p>
+                    <p class="text-sm text-stone-500 dark:text-stone-400">Diminishing returns: analyzing nitrogen use efficiency across treatment plots.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

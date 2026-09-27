@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Nitrogen Response Curve — Broadbalk Explorer</title>
+    <meta name="description" content="Diminishing returns, environmental cliffs, and the rotational advantage on the Broadbalk experiment.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200 font-sans min-h-screen">
+    <nav id="main-nav"></nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Hero Section -->
+        <section class="hero-nitrogen bg-gradient-to-br from-green-900 to-emerald-800 rounded-3xl p-8 md:p-12 text-white shadow-xl">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">The Nitrogen Response Curve</h1>
+                <p class="text-xl text-emerald-100 mb-8">Diminishing returns, environmental cliffs, and the rotational advantage</p>
+                <div class="bg-black/20 rounded-xl p-6 border border-white/10 mb-8">
+                    <p class="text-2xl font-medium leading-snug">First 48 kg N/ha yields 58 kg grain per kg N — the last 48 kg yields only 6 kg grain per kg N</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white/10 rounded-lg p-5 backdrop-blur-sm">
+                        <div class="text-3xl font-bold text-emerald-300 mb-1">58 → 6</div>
+                        <div class="text-sm text-emerald-100 font-medium mb-2">kg grain per kg N applied</div>
+                        <div class="text-xs text-emerald-200/80">Diminishing returns</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-5 backdrop-blur-sm">
+                        <div class="text-3xl font-bold text-red-400 mb-1">+300%</div>
+                        <div class="text-sm text-emerald-100 font-medium mb-2">Nitrate leaching spike</div>
+                        <div class="text-xs text-emerald-200/80">Environmental cliff above optimum</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-5 backdrop-blur-sm">
+                        <div class="text-3xl font-bold text-blue-300 mb-1">+2.0 t/ha</div>
+                        <div class="text-sm text-emerald-100 font-medium mb-2">Rotational advantage</div>
+                        <div class="text-xs text-emerald-200/80">Over continuous, with 48 kg less N</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Context Panel -->
+        <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+            <details class="group">
+                <summary class="flex justify-between items-center font-semibold cursor-pointer text-lg">
+                    Why This Matters
+                    <span class="transition group-open:rotate-180">
+                        <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                    </span>
+                </summary>
+                <div class="mt-4 text-stone-600 dark:text-stone-300 space-y-4 leading-relaxed">
+                    <p>Broadbalk features a graded N series (0-288 kg N/ha) under identical basal PKMg. Plots 5-16 receive different N rates, allowing us to perfectly isolate the impact of nitrogen fertilizer on crop performance and the environment.</p>
+                    <p>Goulding et al. (2000) measured tile drain nitrate directly per plot. The data reveals a critical threshold: Below N₃-N₄ (144-192 kg N/ha), the crop absorbs nearly all applied N. Above this optimum, yield plateaus but leaching surges exponentially.</p>
+                    <p>Furthermore, the introduction of crop rotations to Broadbalk demonstrated that the rotational break delivers a +2.0 t/ha bonus compared to continuous wheat, largely by reducing soil-borne take-all disease.</p>
+                </div>
+            </details>
+        </section>
+
+        <!-- Interactive Main Chart & Controls -->
+        <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+            <h2 class="text-2xl font-bold mb-6">Interactive Response Model</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Slider Controls -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div>
+                        <label for="n-slider" class="block text-sm font-medium mb-2">Nitrogen Rate (kg N/ha)</label>
+                        <input type="range" id="n-slider" min="0" max="6" value="0" class="w-full accent-emerald-600 cursor-pointer">
+                        <div class="flex justify-between text-xs text-stone-500 dark:text-stone-400 mt-1">
+                            <span>0</span><span>288</span>
+                        </div>
+                    </div>
+                    
+                    <div id="interactive-stats" class="bg-stone-50 dark:bg-stone-900 rounded-xl p-4 border border-stone-200 dark:border-stone-700 space-y-4">
+                        <div>
+                            <div class="text-sm text-stone-500 dark:text-stone-400">Current N Rate</div>
+                            <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400"><span id="stat-n">0</span> kg/ha</div>
+                        </div>
+                        <hr class="border-stone-200 dark:border-stone-700">
+                        <div>
+                            <div class="text-sm text-stone-500 dark:text-stone-400">Rotational Yield</div>
+                            <div class="text-xl font-bold text-stone-800 dark:text-stone-100"><span id="stat-yield">2.2</span> t/ha</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-stone-500 dark:text-stone-400">Marginal Efficiency</div>
+                            <div class="text-lg font-semibold text-blue-600 dark:text-blue-400"><span id="stat-eff">--</span> kg/kg</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-stone-500 dark:text-stone-400">Nitrate Leached</div>
+                            <div class="text-lg font-semibold text-red-600 dark:text-red-400"><span id="stat-leach">8</span> kg N/ha</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Chart -->
+                <div class="lg:col-span-3">
+                    <div class="chart-container-tall relative h-[400px]">
+                        <canvas id="mainCurveChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Environmental Cliff -->
+            <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <h3 class="text-xl font-bold mb-2">The Environmental Cliff</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Yield plateaus while nitrate leaching grows exponentially</p>
+                <div class="chart-container relative h-[300px]">
+                    <canvas id="cliffChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Marginal Returns Waterfall -->
+            <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
+                <h3 class="text-xl font-bold mb-2">Marginal Returns</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Grain gained per additional kg N (Rotational Wheat)</p>
+                <div class="chart-container relative h-[300px]">
+                    <canvas id="marginalChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Rotation Premium -->
+            <section class="bg-white dark:bg-stone-800 rounded-2xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 lg:col-span-2">
+                <h3 class="text-xl font-bold mb-2">The Rotation Premium</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">Continuous vs 1st Wheat in Rotation</p>
+                <div class="chart-container relative h-[300px]">
+                    <canvas id="rotationChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <!-- References -->
+        <section class="bg-stone-100 dark:bg-stone-800/50 rounded-xl p-6 text-sm">
+            <h4 class="font-bold mb-2">References & Methodology</h4>
+            <ul class="list-disc list-inside space-y-1 text-stone-600 dark:text-stone-400">
+                <li>Goulding, K.W.T., et al. (2000). Nitrate leaching from arable and horticultural land. Soil Use and Management, 16, 145-151.</li>
+                <li>Macdonald, A.J., et al. (2018). The Broadbalk Wheat Experiment: yield trends and long-term effects. Journal of Agricultural Science, 156(6), 747-758.</li>
+                <li>Data represents smoothed long-term means for modern cultivars (post-1985).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="js/shared.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/chart-factory.js"></script>
+    <script src="js/nitrogen.js"></script>
+</body>
+</html>
