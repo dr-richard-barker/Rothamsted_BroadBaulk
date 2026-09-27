@@ -1,14 +1,77 @@
-/* Broadbalk Explorer - Custom Styles */
-/* Base Tailwind utilities are loaded via CDN; this file handles custom properties and components */
+/* ==========================================================================
+   CoSE Theme for Broadbalk Explorer
+   Collaborative Science Environment (CoSE) Official Styling
+   (No left-hand sidebar layout — full-width scientific canvas)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,300..800;1,300..800&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
 
 :root {
-    --chart-height: 420px;
-    --chart-height-tall: 520px;
-    --chart-height-short: 300px;
-    --nav-height: 64px;
+    --chart-height: 430px;
+    --chart-height-tall: 540px;
+    --chart-height-short: 310px;
+    --nav-height: 68px;
+
+    /* CoSE Palette */
+    --cose-dark: #0f172a;
+    --cose-space-black: #090d16;
+    --cose-blue-primary: #0284c7;
+    --cose-blue-light: #38bdf8;
+    --cose-blue-glow: rgba(56, 189, 248, 0.18);
+    --cose-emerald-primary: #059669;
+    --cose-emerald-light: #10b981;
+    --cose-amber-gold: #f59e0b;
+    --cose-amber-light: #fbbf24;
+    --cose-crimson: #e11d48;
 }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    font-family: 'Karla', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading, .cose-brand {
+    font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.025em;
+}
+
+/* CoSE Glassmorphic Navigation */
+.cose-nav {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+    transition: all 0.25s ease;
+}
+
+.dark .cose-nav {
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+}
+
+/* CoSE Badge */
+.cose-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(16, 185, 129, 0.12));
+    color: #0284c7;
+    border: 1px solid rgba(2, 132, 199, 0.25);
+}
+
+.dark .cose-badge {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.15));
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
 
 /* Chart containers */
 .chart-container {
@@ -21,22 +84,22 @@ html { scroll-behavior: smooth; }
 
 @media (max-width: 640px) {
     :root {
-        --chart-height: 300px;
-        --chart-height-tall: 380px;
+        --chart-height: 310px;
+        --chart-height-tall: 390px;
         --chart-height-short: 240px;
     }
 }
 
-/* Fade-in animation */
+/* Animations */
 .fade-in {
-    animation: fadeIn 0.5s ease-out both;
+    animation: coseFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.fade-in-delay-1 { animation-delay: 0.1s; }
-.fade-in-delay-2 { animation-delay: 0.2s; }
-.fade-in-delay-3 { animation-delay: 0.3s; }
+.fade-in-delay-1 { animation-delay: 0.08s; }
+.fade-in-delay-2 { animation-delay: 0.16s; }
+.fade-in-delay-3 { animation-delay: 0.24s; }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
+@keyframes coseFadeIn {
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -44,15 +107,15 @@ html { scroll-behavior: smooth; }
 .collapsible-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
+    transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
     opacity: 0;
 }
 .collapsible-content.open {
-    max-height: 3000px;
+    max-height: 3500px;
     opacity: 1;
 }
 .collapsible-toggle svg {
-    transition: transform 0.3s ease;
+    transition: transform 0.28s ease;
 }
 .collapsible-toggle.open svg {
     transform: rotate(180deg);
@@ -60,66 +123,96 @@ html { scroll-behavior: smooth; }
 
 /* Narrative prose styling */
 .narrative-text {
-    line-height: 1.8;
+    line-height: 1.82;
     font-size: 1.0625rem;
 }
-.narrative-text p { margin-bottom: 1rem; }
-.narrative-text strong { font-weight: 600; }
+.narrative-text p { margin-bottom: 1.1rem; }
+.narrative-text strong { font-weight: 700; }
 
-/* Scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 4px; }
-.dark ::-webkit-scrollbar-thumb { background: #57534e; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-/* Hero gradients for each narrative page */
-.hero-dashboard  { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fefce8 100%); }
-.hero-co2        { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fefce8 100%); }
+/* CoSE Theme Hero Gradients (Light Mode) */
+.hero-dashboard  { background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 50%, #fefce8 100%); }
+.hero-co2        { background: linear-gradient(135deg, #ecfeff 0%, #f0fdf4 50%, #f8fafc 100%); }
 .hero-thermal    { background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 50%, #fefce8 100%); }
-.hero-genotype   { background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #ecfdf5 100%); }
-.hero-soc        { background: linear-gradient(135deg, #faf5ff 0%, #fef3c7 50%, #f5f5f4 100%); }
+.hero-genotype   { background: linear-gradient(135deg, #eff6ff 0%, #ecfeff 50%, #f0fdf4 100%); }
+.hero-soc        { background: linear-gradient(135deg, #faf5ff 0%, #fef3c7 50%, #f8fafc 100%); }
 .hero-nutrients  { background: linear-gradient(135deg, #fef2f2 0%, #fefce8 50%, #f0fdf4 100%); }
-.hero-nitrogen   { background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 50%, #fefce8 100%); }
+.hero-nitrogen   { background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 50%, #fefce8 100%); }
+.hero-qc         { background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 50%, #eff6ff 100%); }
 
-.dark .hero-dashboard  { background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #422006 100%); }
-.dark .hero-co2        { background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #422006 100%); }
-.dark .hero-thermal    { background: linear-gradient(135deg, #431407 0%, #450a0a 50%, #451a03 100%); }
-.dark .hero-genotype   { background: linear-gradient(135deg, #172554 0%, #0c4a6e 50%, #052e16 100%); }
-.dark .hero-soc        { background: linear-gradient(135deg, #2e1065 0%, #451a03 50%, #1c1917 100%); }
-.dark .hero-nutrients  { background: linear-gradient(135deg, #450a0a 0%, #422006 50%, #052e16 100%); }
-.dark .hero-nitrogen   { background: linear-gradient(135deg, #172554 0%, #052e16 50%, #422006 100%); }
+/* CoSE Theme Hero Gradients (Dark Mode) */
+.dark .hero-dashboard  { background: linear-gradient(135deg, #06241a 0%, #082f49 50%, #1e1b4b 100%); }
+.dark .hero-co2        { background: linear-gradient(135deg, #082f49 0%, #064e3b 50%, #0f172a 100%); }
+.dark .hero-thermal    { background: linear-gradient(135deg, #451a03 0%, #4c0519 50%, #0f172a 100%); }
+.dark .hero-genotype   { background: linear-gradient(135deg, #172554 0%, #0c4a6e 50%, #064e3b 100%); }
+.dark .hero-soc        { background: linear-gradient(135deg, #2e1065 0%, #451a03 50%, #0f172a 100%); }
+.dark .hero-nutrients  { background: linear-gradient(135deg, #4c0519 0%, #451a03 50%, #064e3b 100%); }
+.dark .hero-nitrogen   { background: linear-gradient(135deg, #172554 0%, #064e3b 50%, #451a03 100%); }
+.dark .hero-qc         { background: linear-gradient(135deg, #064e3b 0%, #082f49 50%, #172554 100%); }
 
-/* Stat card hover effect */
+/* CoSE Card Elevation */
+.cose-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.cose-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.dark .cose-card {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.dark .cose-card:hover {
+    border-color: #475569;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Stat Cards */
 .stat-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1), 0 4px 10px -6px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.05);
 }
 
-/* Treatment checkbox labels */
+/* Checkbox Labels */
 .treatment-checkbox input[type="checkbox"]:checked + span {
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* Print styles */
+/* CoSE Button Styles */
+.cose-btn-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
+    transition: all 0.2s ease;
+}
+.cose-btn-primary:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+}
+
+/* Print Styles */
 @media print {
     nav, .no-print, footer { display: none !important; }
     .chart-container { break-inside: avoid; page-break-inside: avoid; }
     body { color: #000 !important; background: #fff !important; }
-}
-
-/* Tooltip for data points */
-.data-tooltip {
-    position: absolute;
-    padding: 8px 12px;
-    background: rgba(28, 25, 23, 0.92);
-    color: #fafaf9;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    pointer-events: none;
-    z-index: 100;
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
