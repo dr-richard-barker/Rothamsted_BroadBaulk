@@ -6,35 +6,42 @@
 (function () {
     'use strict';
 
+    if (typeof window !== 'undefined') {
+        window.BK = window.BK || {};
+        window.BK._charts = window.BK._charts || [];
+    }
+
     /* ── Global Chart.js Defaults ───────────────────────── */
-    const isDark = () => document.documentElement.classList.contains('dark');
+    const isDark = () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
     const textColor = () => isDark() ? '#d6d3d1' : '#57534e';
     const gridColor = () => isDark() ? '#44403c' : '#e7e5e4';
 
-    Chart.defaults.font.family = "'Inter', 'system-ui', '-apple-system', sans-serif";
-    Chart.defaults.font.size = 13;
-    Chart.defaults.color = textColor();
-    Chart.defaults.responsive = true;
-    Chart.defaults.maintainAspectRatio = false;
+    if (typeof Chart !== 'undefined' && Chart.defaults) {
+        Chart.defaults.font.family = "'Karla', 'Inter', 'system-ui', '-apple-system', sans-serif";
+        Chart.defaults.font.size = 13;
+        Chart.defaults.color = textColor();
+        Chart.defaults.responsive = true;
+        Chart.defaults.maintainAspectRatio = false;
 
-    Chart.defaults.plugins.legend.position = 'bottom';
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.padding = 16;
-    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+        Chart.defaults.plugins.legend.position = 'bottom';
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.padding = 16;
+        Chart.defaults.plugins.legend.labels.boxWidth = 8;
 
-    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(28, 25, 23, 0.92)';
-    Chart.defaults.plugins.tooltip.titleFont = { weight: '600', size: 13 };
-    Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
-    Chart.defaults.plugins.tooltip.cornerRadius = 8;
-    Chart.defaults.plugins.tooltip.padding = { top: 10, bottom: 10, left: 14, right: 14 };
-    Chart.defaults.plugins.tooltip.displayColors = true;
-    Chart.defaults.plugins.tooltip.boxPadding = 4;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(28, 25, 23, 0.92)';
+        Chart.defaults.plugins.tooltip.titleFont = { weight: '600', size: 13 };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.padding = { top: 10, bottom: 10, left: 14, right: 14 };
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
 
-    Chart.defaults.elements.point.radius = 1.5;
-    Chart.defaults.elements.point.hoverRadius = 5;
-    Chart.defaults.elements.point.hitRadius = 8;
-    Chart.defaults.elements.line.tension = 0.25;
-    Chart.defaults.elements.line.borderWidth = 2;
+        Chart.defaults.elements.point.radius = 2.5;
+        Chart.defaults.elements.point.hoverRadius = 6;
+        Chart.defaults.elements.point.hitRadius = 8;
+        Chart.defaults.elements.line.tension = 0.25;
+        Chart.defaults.elements.line.borderWidth = 2;
+    }
 
     /* ── Plot Treatment Colors ──────────────────────────── */
     const PLOT_COLORS = {
@@ -74,6 +81,7 @@
     /* ── Helper: Deep Merge ─────────────────────────────── */
     function deepMerge(target, source) {
         const result = { ...target };
+        if (!source || typeof source !== 'object') return result;
         for (const key in source) {
             if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
                 result[key] = deepMerge(result[key] || {}, source[key]);
@@ -84,14 +92,92 @@
         return result;
     }
 
+    /* ── Point Normalizer ───────────────────────────────── */
+    function normalizePoint(pt) {
+        if (!pt) return null;
+        if (typeof pt !== 'object') return pt;
+        if (Array.isArray(pt)) {
+            const x = Number(pt[0]);
+            const y = pt[1] !== null && pt[1] !== undefined ? Number(pt[1]) : null;
+            return isNaN(x) ? null : { x, y };
+        }
+        let x, y;
+        if (pt.x !== undefined) {
+            x = pt.x;
+            y = pt.y;
+        } else if (pt.year !== undefined) {
+            x = pt.year;
+            y = pt.yield !== undefined ? pt.yield : (pt.v !== undefined ? pt.v : (pt.value !== undefined ? pt.value : pt.y));
+        } else if (pt.v !== undefined) {
+            // format: { y: 1852, v: 1.4 }
+            x = pt.y;
+            y = pt.v;
+        } else {
+            x = pt.x;
+            y = pt.y;
+        }
+        if (x === undefined || isNaN(Number(x))) return null;
+        return {
+            x: Number(x),
+            y: y !== null && y !== undefined && !isNaN(Number(y)) ? Number(y) : null
+        };
+    }
+
+    /* ── Dataset Builder Helpers ─────────────────────────── */
+    function makeYieldDataset(plotId, data, options = {}) {
+        const pc = PLOT_COLORS[plotId];
+        const normalized = Array.isArray(data)
+            ? data.map(normalizePoint).filter(p => p !== null)
+            : [];
+        return {
+            label: pc ? pc.label : `Plot ${plotId}`,
+            data: normalized,
+            borderColor: pc ? pc.bg : '#6b7280',
+            backgroundColor: (pc ? pc.bg : '#6b7280') + '20',
+            fill: false,
+            pointRadius: 2.5,
+            pointHoverRadius: 6,
+            borderWidth: 2,
+            tension: 0.2,
+            ...options,
+        };
+    }
+
     /* ── Chart Creator: Time Series ─────────────────────── */
     function createTimeSeriesChart(canvasId, config) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) { console.warn(`Canvas #${canvasId} not found`); return null; }
 
+        const rawDatasets = (config.data && config.data.datasets) || config.datasets || [];
+        const rawLabels = (config.data && config.data.labels) || config.labels || [];
+
+        // Normalize datasets for linear x-axis
+        const normalizedDatasets = rawDatasets.map(ds => {
+            const copy = { ...ds };
+            if (Array.isArray(copy.data)) {
+                // If data is numbers and labels are provided, pair them as {x, y}
+                if (rawLabels.length > 0 && typeof copy.data[0] === 'number') {
+                    copy.data = copy.data.map((val, idx) => ({
+                        x: Number(rawLabels[idx]),
+                        y: val !== null && val !== undefined ? Number(val) : null
+                    })).filter(p => !isNaN(p.x));
+                } else {
+                    copy.data = copy.data.map(normalizePoint).filter(p => p !== null);
+                }
+            }
+            if (!copy.yAxisID) copy.yAxisID = 'y';
+            return copy;
+        });
+
         const defaults = {
             type: 'line',
+            data: {
+                datasets: normalizedDatasets,
+                labels: rawLabels,
+            },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         type: 'linear',
@@ -113,9 +199,38 @@
             },
         };
 
-        const merged = deepMerge(defaults, config);
+        const cleanConfig = { ...config };
+        delete cleanConfig.datasets;
+        delete cleanConfig.labels;
+
+        // Support root-level y / yLeft configuration
+        if (config.y || config.yLeft) {
+            cleanConfig.options = cleanConfig.options || {};
+            cleanConfig.options.scales = cleanConfig.options.scales || {};
+            cleanConfig.options.scales.y = cleanConfig.options.scales.y || {};
+            const yConf = config.y || config.yLeft;
+            if (typeof yConf === 'string') {
+                cleanConfig.options.scales.y.title = { display: true, text: yConf };
+            } else if (yConf.title) {
+                cleanConfig.options.scales.y.title = typeof yConf.title === 'string'
+                    ? { display: true, text: yConf.title }
+                    : yConf.title;
+            }
+        }
+
+        const merged = deepMerge(defaults, cleanConfig);
+        merged.data = {
+            datasets: normalizedDatasets,
+            labels: rawLabels,
+        };
+
         const chart = new Chart(ctx, merged);
         window.BK._charts.push(chart);
+
+        if (config.annotations) {
+            addAnnotations(chart, typeof config.annotations === 'object' ? config.annotations : {});
+        }
+
         return chart;
     }
 
@@ -124,9 +239,37 @@
         const ctx = document.getElementById(canvasId);
         if (!ctx) { console.warn(`Canvas #${canvasId} not found`); return null; }
 
+        const rawDatasets = (config.data && config.data.datasets) || config.datasets || [];
+        const rawLabels = (config.data && config.data.labels) || config.labels || [];
+
+        // In dual-axis mode, datasets without yAxisID or with 'y' default to 'yLeft'
+        const normalizedDatasets = rawDatasets.map(ds => {
+            const copy = { ...ds };
+            if (Array.isArray(copy.data)) {
+                if (rawLabels.length > 0 && typeof copy.data[0] === 'number') {
+                    copy.data = copy.data.map((val, idx) => ({
+                        x: Number(rawLabels[idx]),
+                        y: val !== null && val !== undefined ? Number(val) : null
+                    })).filter(p => !isNaN(p.x));
+                } else {
+                    copy.data = copy.data.map(normalizePoint).filter(p => p !== null);
+                }
+            }
+            if (!copy.yAxisID || copy.yAxisID === 'y') {
+                copy.yAxisID = 'yLeft';
+            }
+            return copy;
+        });
+
         const defaults = {
             type: 'line',
+            data: {
+                datasets: normalizedDatasets,
+                labels: rawLabels,
+            },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         type: 'linear',
@@ -140,14 +283,14 @@
                         beginAtZero: true,
                         ticks: { color: textColor() },
                         grid: { color: gridColor() },
-                        title: { display: true, color: textColor() },
+                        title: { display: true, text: 'Grain Yield (t/ha @ 85% DM)', color: textColor() },
                     },
                     yRight: {
                         type: 'linear',
                         position: 'right',
                         grid: { drawOnChartArea: false },
                         ticks: { color: textColor() },
-                        title: { display: true, color: textColor() },
+                        title: { display: true, text: '', color: textColor() },
                     },
                 },
                 interaction: { mode: 'nearest', intersect: false },
@@ -157,9 +300,54 @@
             },
         };
 
-        const merged = deepMerge(defaults, config);
+        const cleanConfig = { ...config };
+        delete cleanConfig.datasets;
+        delete cleanConfig.labels;
+
+        if (config.yLeft) {
+            cleanConfig.options = cleanConfig.options || {};
+            cleanConfig.options.scales = cleanConfig.options.scales || {};
+            cleanConfig.options.scales.yLeft = cleanConfig.options.scales.yLeft || {};
+            if (typeof config.yLeft === 'string') {
+                cleanConfig.options.scales.yLeft.title = { display: true, text: config.yLeft };
+            } else if (config.yLeft.title) {
+                cleanConfig.options.scales.yLeft.title = typeof config.yLeft.title === 'string'
+                    ? { display: true, text: config.yLeft.title }
+                    : config.yLeft.title;
+            }
+        }
+
+        if (config.yRight) {
+            cleanConfig.options = cleanConfig.options || {};
+            cleanConfig.options.scales = cleanConfig.options.scales || {};
+            cleanConfig.options.scales.yRight = cleanConfig.options.scales.yRight || {};
+            if (typeof config.yRight === 'string') {
+                cleanConfig.options.scales.yRight.title = { display: true, text: config.yRight };
+            } else if (config.yRight.title) {
+                cleanConfig.options.scales.yRight.title = typeof config.yRight.title === 'string'
+                    ? { display: true, text: config.yRight.title }
+                    : config.yRight.title;
+            }
+        }
+
+        const merged = deepMerge(defaults, cleanConfig);
+        merged.data = {
+            datasets: normalizedDatasets,
+            labels: rawLabels,
+        };
+
         const chart = new Chart(ctx, merged);
         window.BK._charts.push(chart);
+
+        if (config.annotations) {
+            addAnnotations(chart, {
+                cultivars: true,
+                epochs: true,
+                yScaleID: 'yLeft',
+                ...(typeof config.annotations === 'object' ? config.annotations : {})
+            });
+        }
+
         return chart;
     }
 
@@ -168,9 +356,18 @@
         const ctx = document.getElementById(canvasId);
         if (!ctx) { console.warn(`Canvas #${canvasId} not found`); return null; }
 
+        const rawDatasets = (config.data && config.data.datasets) || config.datasets || [];
+        const rawLabels = (config.data && config.data.labels) || config.labels || [];
+
         const defaults = {
             type: 'bar',
+            data: {
+                datasets: rawDatasets,
+                labels: rawLabels,
+            },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         ticks: { color: textColor() },
@@ -189,7 +386,16 @@
             },
         };
 
-        const merged = deepMerge(defaults, config);
+        const cleanConfig = { ...config };
+        delete cleanConfig.datasets;
+        delete cleanConfig.labels;
+
+        const merged = deepMerge(defaults, cleanConfig);
+        merged.data = {
+            datasets: rawDatasets,
+            labels: rawLabels,
+        };
+
         const chart = new Chart(ctx, merged);
         window.BK._charts.push(chart);
         return chart;
@@ -200,9 +406,18 @@
         const ctx = document.getElementById(canvasId);
         if (!ctx) { console.warn(`Canvas #${canvasId} not found`); return null; }
 
+        const rawDatasets = (config.data && config.data.datasets) || config.datasets || [];
+        const rawLabels = (config.data && config.data.labels) || config.labels || [];
+
         const defaults = {
             type: 'scatter',
+            data: {
+                datasets: rawDatasets,
+                labels: rawLabels,
+            },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         ticks: { color: textColor() },
@@ -222,34 +437,51 @@
             },
         };
 
-        const merged = deepMerge(defaults, config);
+        const cleanConfig = { ...config };
+        delete cleanConfig.datasets;
+        delete cleanConfig.labels;
+
+        const merged = deepMerge(defaults, cleanConfig);
+        merged.data = {
+            datasets: rawDatasets,
+            labels: rawLabels,
+        };
+
         const chart = new Chart(ctx, merged);
         window.BK._charts.push(chart);
         return chart;
     }
 
     /* ── Annotation: Cultivar Era Bands ──────────────────── */
-    function buildCultivarAnnotations() {
+    function buildCultivarAnnotations(xScaleID = 'x', yScaleID) {
         const annotations = {};
         CULTIVAR_ERAS.forEach((era, i) => {
-            annotations[`era_${i}`] = {
+            const anno = {
                 type: 'box',
+                xScaleID: xScaleID,
                 xMin: era.start,
                 xMax: era.end,
                 backgroundColor: (isDark() ? era.color + '25' : era.color + '40'),
                 borderWidth: 0,
                 z: -1,
             };
+            if (yScaleID) {
+                anno.yScaleID = yScaleID;
+            }
+            annotations[`era_${i}`] = anno;
         });
         return annotations;
     }
 
     /* ── Annotation: Epoch Lines ─────────────────────────── */
-    function buildEpochAnnotations() {
+    function buildEpochAnnotations(xScaleID = 'x', yScaleID) {
         const annotations = {};
         EPOCH_EVENTS.forEach((e, i) => {
-            annotations[`epoch_${i}`] = {
+            const anno = {
                 type: 'line',
+                scaleID: xScaleID,
+                xScaleID: xScaleID,
+                value: e.year,
                 xMin: e.year,
                 xMax: e.year,
                 borderColor: e.color,
@@ -267,21 +499,35 @@
                     borderRadius: 4,
                 },
             };
+            if (yScaleID) {
+                anno.yScaleID = yScaleID;
+            }
+            annotations[`epoch_${i}`] = anno;
         });
         return annotations;
     }
 
     /* ── Convenience: Add All Annotations ────────────────── */
-    function addAnnotations(chart, { cultivars = true, epochs = true } = {}) {
+    function addAnnotations(chart, { cultivars = true, epochs = true, xScaleID, yScaleID } = {}) {
+        if (!chart || !chart.options) return;
         if (!chart.options.plugins) chart.options.plugins = {};
         if (!chart.options.plugins.annotation) chart.options.plugins.annotation = {};
+
+        // Resolve scale IDs
+        const xId = xScaleID || (chart.options.scales && chart.options.scales.x ? 'x' : 'x');
+        const yId = yScaleID || (chart.options.scales && chart.options.scales.yLeft ? 'yLeft' : (chart.options.scales && chart.options.scales.y ? 'y' : undefined));
+
         const existing = chart.options.plugins.annotation.annotations || {};
-        chart.options.plugins.annotation.annotations = {
-            ...existing,
-            ...(cultivars ? buildCultivarAnnotations() : {}),
-            ...(epochs ? buildEpochAnnotations() : {}),
-        };
-        chart.update();
+        try {
+            chart.options.plugins.annotation.annotations = {
+                ...existing,
+                ...(cultivars ? buildCultivarAnnotations(xId, yId) : {}),
+                ...(epochs ? buildEpochAnnotations(xId, yId) : {}),
+            };
+            chart.update('none');
+        } catch (err) {
+            console.warn('Broadbalk Chart Factory: Unable to render annotations:', err);
+        }
     }
 
     /* ── Regression Helpers ──────────────────────────────── */
@@ -319,20 +565,6 @@
         ];
     }
 
-    /* ── Dataset Builder Helpers ─────────────────────────── */
-    function makeYieldDataset(plotId, data, options = {}) {
-        const pc = PLOT_COLORS[plotId];
-        return {
-            label: pc ? pc.label : `Plot ${plotId}`,
-            data: data,
-            borderColor: pc ? pc.bg : '#6b7280',
-            backgroundColor: (pc ? pc.bg : '#6b7280') + '20',
-            fill: false,
-            pointRadius: 1.5,
-            ...options,
-        };
-    }
-
     /* ── Export ──────────────────────────────────────────── */
     window.BK = window.BK || {};
     window.BK.PLOT_COLORS = PLOT_COLORS;
@@ -348,4 +580,5 @@
     window.BK.linearRegression = linearRegression;
     window.BK.regressionLine = regressionLine;
     window.BK.makeYieldDataset = makeYieldDataset;
+    window.BK.normalizePoint = normalizePoint;
 })();

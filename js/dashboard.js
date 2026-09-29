@@ -1,6 +1,8 @@
-// dashboard.js
+// js/dashboard.js
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
+  'use strict';
+
   // --- Embedded Data ---
   const YIELD_DATA = {
     // Plot 03 - Nil (Unmanured): remarkably flat ~1.0-1.4 t/ha
@@ -73,12 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderPlotControls() {
     const container = document.getElementById('plot-controls');
+    if (!container) return;
     container.innerHTML = '';
 
     const plots = ['03', '2.2', '08', '09', '06', '16'];
+    const BK = window.BK || {};
+    const plotColors = BK.PLOT_COLORS || {
+      '03':  { bg: '#6b7280', label: 'Nil (Unmanured)' },
+      '2.2': { bg: '#a16207', label: 'FYM (35 t/ha)' },
+      '08':  { bg: '#22c55e', label: 'N₃PKMg (144 kg N/ha)' },
+      '09':  { bg: '#eab308', label: 'N₄PKMg (192 kg N/ha)' },
+      '06':  { bg: '#3b82f6', label: 'N₁PKMg (48 kg N/ha)' },
+      '16':  { bg: '#ef4444', label: 'N₆PKMg (288 kg N/ha)' },
+    };
     
     plots.forEach(plotId => {
-      const config = BK.PLOT_COLORS[plotId] || { bg: '#888', label: `Plot ${plotId}` };
+      const config = plotColors[plotId] || { bg: '#888', label: `Plot ${plotId}` };
       
       const wrapper = document.createElement('label');
       wrapper.className = 'flex items-center gap-3 p-2 rounded hover:bg-stone-200 dark:hover:bg-stone-700 cursor-pointer transition-colors';
@@ -88,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
       checkbox.value = plotId;
       checkbox.checked = activePlots.has(plotId);
       checkbox.className = 'w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 bg-stone-100 border-stone-300 dark:bg-stone-700 dark:border-stone-600';
-      // Inline style doesn't work perfectly for checkbox colors in tailwind without custom forms, but we add a badge
       
       checkbox.addEventListener('change', (e) => {
         if (e.target.checked) {
@@ -100,11 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const colorBadge = document.createElement('span');
-      colorBadge.className = 'w-3 h-3 rounded-full inline-block';
+      colorBadge.className = 'w-3 h-3 rounded-full inline-block flex-shrink-0';
       colorBadge.style.backgroundColor = config.bg;
 
       const labelText = document.createElement('span');
-      labelText.className = 'text-sm font-medium';
+      labelText.className = 'text-sm font-medium leading-tight';
       labelText.textContent = config.label;
 
       wrapper.appendChild(checkbox);
@@ -116,42 +127,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setupEventListeners() {
     const climateSelect = document.getElementById('climate-select');
-    climateSelect.addEventListener('change', (e) => {
-      activeClimate = e.target.value;
-      updateChart();
-    });
+    if (climateSelect) {
+      climateSelect.addEventListener('change', (e) => {
+        activeClimate = e.target.value;
+        updateChart();
+      });
+    }
 
     const exportBtn = document.getElementById('export-btn');
-    exportBtn.addEventListener('click', () => {
-      exportData();
-    });
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        exportData();
+      });
+    }
   }
 
   function updateChart() {
+    const BK = window.BK || {};
+    const isDual = activeClimate !== 'none';
+    const yAxisID = isDual ? 'yLeft' : 'y';
     const datasets = [];
 
     // Add selected plots
     Array.from(activePlots).forEach(plotId => {
       if (YIELD_DATA[plotId]) {
-        datasets.push(BK.makeYieldDataset(plotId, YIELD_DATA[plotId]));
+        const points = YIELD_DATA[plotId].map(d => ({ x: d.y, y: d.v }));
+        if (typeof BK.makeYieldDataset === 'function') {
+          datasets.push(BK.makeYieldDataset(plotId, points, { yAxisID: yAxisID }));
+        } else {
+          datasets.push({
+            label: `Plot ${plotId}`,
+            data: points,
+            yAxisID: yAxisID,
+            borderWidth: 2,
+            pointRadius: 2.5,
+            fill: false
+          });
+        }
       }
     });
 
-    // Determine dual axis config
-    let rightAxisConfig = null;
-    
     // Add climate overlay if selected
-    if (activeClimate !== 'none') {
+    let rightAxisTitle = '';
+    if (isDual) {
       const climateMapped = CLIMATE_DATA.map(d => ({ x: d.y, y: d[activeClimate] }));
       
       let label = '';
-      let color = '#3b82f6'; // blue-500
-      let title = '';
+      let color = '#3b82f6';
 
-      if (activeClimate === 'rain') { label = 'Annual Rain (mm)'; title = 'Rainfall (mm)'; color = '#3b82f6'; }
-      if (activeClimate === 'springRain') { label = 'Spring Rain (mm)'; title = 'Spring Rain (mm)'; color = '#0ea5e9'; }
-      if (activeClimate === 'summerTemp') { label = 'Summer Temp (°C)'; title = 'Temperature (°C)'; color = '#ef4444'; }
-      if (activeClimate === 'gdd') { label = 'GDD'; title = 'Growing Degree Days'; color = '#f59e0b'; }
+      if (activeClimate === 'rain') { label = 'Annual Rain (mm)'; rightAxisTitle = 'Rainfall (mm)'; color = '#3b82f6'; }
+      if (activeClimate === 'springRain') { label = 'Spring Rain (mm)'; rightAxisTitle = 'Spring Rain (mm)'; color = '#0ea5e9'; }
+      if (activeClimate === 'summerTemp') { label = 'Summer Temp (°C)'; rightAxisTitle = 'Temperature (°C)'; color = '#ef4444'; }
+      if (activeClimate === 'gdd') { label = 'GDD'; rightAxisTitle = 'Growing Degree Days'; color = '#f59e0b'; }
 
       datasets.push({
         label: label,
@@ -161,38 +188,75 @@ document.addEventListener('DOMContentLoaded', () => {
         yAxisID: 'yRight',
         type: 'bar',
         barPercentage: 0.5,
-        order: 2 // behind lines
+        order: 2
       });
-
-      rightAxisConfig = {
-        title: title,
-        grid: false
-      };
     }
-
-    const config = {
-      datasets: datasets,
-      yLeft: { title: 'Grain Yield (t/ha)' },
-      yRight: rightAxisConfig,
-      annotations: { cultivars: true, epochs: true }
-    };
 
     if (chart) {
       chart.destroy();
+      chart = null;
     }
 
-    if (activeClimate !== 'none') {
-      chart = BK.createDualAxisChart('dashboard-chart', config);
+    const chartOptions = {
+      scales: {
+        x: {
+          type: 'linear',
+          min: 1850,
+          max: 2025,
+          title: { display: true, text: 'Year' },
+          ticks: { callback: v => v.toString() }
+        }
+      }
+    };
+
+    if (isDual) {
+      chartOptions.scales.yLeft = {
+        type: 'linear',
+        position: 'left',
+        title: { display: true, text: 'Grain Yield (t/ha @ 85% DM)' },
+        beginAtZero: true
+      };
+      chartOptions.scales.yRight = {
+        type: 'linear',
+        position: 'right',
+        title: { display: true, text: rightAxisTitle },
+        grid: { drawOnChartArea: false }
+      };
+
+      if (typeof BK.createDualAxisChart === 'function') {
+        chart = BK.createDualAxisChart('dashboard-chart', {
+          data: { datasets: datasets },
+          options: chartOptions,
+          annotations: { cultivars: true, epochs: true, yScaleID: 'yLeft' }
+        });
+      }
     } else {
-      chart = BK.createTimeSeriesChart('dashboard-chart', config);
+      chartOptions.scales.y = {
+        type: 'linear',
+        title: { display: true, text: 'Grain Yield (t/ha @ 85% DM)' },
+        beginAtZero: true
+      };
+
+      if (typeof BK.createTimeSeriesChart === 'function') {
+        chart = BK.createTimeSeriesChart('dashboard-chart', {
+          data: { datasets: datasets },
+          options: chartOptions,
+          annotations: { cultivars: true, epochs: true, yScaleID: 'y' }
+        });
+      }
+    }
+
+    if (chart && typeof BK.addAnnotations === 'function') {
+      BK.addAnnotations(chart, { cultivars: true, epochs: true, yScaleID: isDual ? 'yLeft' : 'y' });
     }
   }
 
   function exportData() {
+    const BK = window.BK || {};
     // Collect all years
     const yearsSet = new Set();
-    Object.values(YIELD_DATA).forEach(plot => plot.forEach(d => yearsSet.add(d.y)));
-    CLIMATE_DATA.forEach(d => yearsSet.add(d.y));
+    Object.values(YIELD_DATA).forEach(plot => plot.forEach(d => yearsSet.add(d.y ?? d.x)));
+    CLIMATE_DATA.forEach(d => yearsSet.add(d.y ?? d.x));
     
     const years = Array.from(yearsSet).sort((a, b) => a - b);
     
@@ -202,28 +266,31 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Plots
       ['03', '2.2', '06', '08', '09', '16'].forEach(plotId => {
-        const pt = YIELD_DATA[plotId]?.find(d => d.y === y);
-        row[`Plot_${plotId}_Yield`] = pt ? pt.v : '';
+        const pt = YIELD_DATA[plotId]?.find(d => (d.y ?? d.x) === y);
+        row[`Plot_${plotId}_Yield`] = pt ? (pt.v ?? pt.y) : '';
       });
       
       // Climate
-      const clim = CLIMATE_DATA.find(d => d.y === y);
-      row['AnnualRain_mm'] = clim ? clim.rain : '';
-      row['SpringRain_mm'] = clim ? clim.springRain : '';
-      row['SummerTemp_C'] = clim ? clim.summerTemp : '';
-      row['GDD'] = clim ? clim.gdd : '';
+      const clim = CLIMATE_DATA.find(d => (d.y ?? d.x) === y);
+      row['AnnualRain_mm'] = clim ? (clim.rain ?? '') : '';
+      row['SpringRain_mm'] = clim ? (clim.springRain ?? '') : '';
+      row['SummerTemp_C'] = clim ? (clim.summerTemp ?? '') : '';
+      row['GDD'] = clim ? (clim.gdd ?? '') : '';
       
       return row;
     });
 
-    BK.exportCSV(rows, 'broadbalk_dashboard_data.csv');
+    if (typeof BK.exportCSV === 'function') {
+      BK.exportCSV(rows, 'broadbalk_dashboard_data.csv');
+    } else {
+      console.warn('BK.exportCSV not available');
+    }
   }
 
-  // Run
-  const BK = window.BK || {};
-  if (BK && BK.createTimeSeriesChart) {
-    init();
+  // --- Bootstrap ---
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 30));
   } else {
-    setTimeout(init, 50);
+    setTimeout(init, 30);
   }
-});
+})();
