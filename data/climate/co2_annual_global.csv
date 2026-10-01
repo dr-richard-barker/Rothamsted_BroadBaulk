@@ -1,29 +1,183 @@
 year,co2_ppm,source
 1843,284.7,Law Dome Ice Core
+1844,284.8,Law Dome Ice Core
+1845,284.9,Law Dome Ice Core
+1846,285.0,Law Dome Ice Core
+1847,285.0,Law Dome Ice Core
+1848,285.1,Law Dome Ice Core
+1849,285.1,Law Dome Ice Core
 1850,285.2,Law Dome Ice Core
+1851,285.3,Law Dome Ice Core
+1852,285.5,Law Dome Ice Core
+1853,285.6,Law Dome Ice Core
+1854,285.8,Law Dome Ice Core
+1855,285.9,Law Dome Ice Core
+1856,286.0,Law Dome Ice Core
+1857,286.1,Law Dome Ice Core
+1858,286.2,Law Dome Ice Core
+1859,286.3,Law Dome Ice Core
 1860,286.4,Law Dome Ice Core
+1861,286.5,Law Dome Ice Core
+1862,286.6,Law Dome Ice Core
+1863,286.6,Law Dome Ice Core
+1864,286.7,Law Dome Ice Core
+1865,286.8,Law Dome Ice Core
+1866,287.0,Law Dome Ice Core
+1867,287.2,Law Dome Ice Core
+1868,287.4,Law Dome Ice Core
+1869,287.6,Law Dome Ice Core
 1870,287.8,Law Dome Ice Core
+1871,288.0,Law Dome Ice Core
+1872,288.3,Law Dome Ice Core
+1873,288.5,Law Dome Ice Core
+1874,288.8,Law Dome Ice Core
+1875,289.0,Law Dome Ice Core
+1876,289.3,Law Dome Ice Core
+1877,289.6,Law Dome Ice Core
+1878,289.9,Law Dome Ice Core
+1879,290.2,Law Dome Ice Core
 1880,290.5,Law Dome Ice Core
+1881,290.8,Law Dome Ice Core
+1882,291.0,Law Dome Ice Core
+1883,291.3,Law Dome Ice Core
+1884,291.5,Law Dome Ice Core
+1885,291.8,Law Dome Ice Core
+1886,292.4,Law Dome Ice Core
+1887,293.0,Law Dome Ice Core
+1888,293.6,Law Dome Ice Core
+1889,294.2,Law Dome Ice Core
 1890,294.8,Law Dome Ice Core
+1891,295.0,Law Dome Ice Core
+1892,295.3,Law Dome Ice Core
+1893,295.5,Law Dome Ice Core
+1894,295.8,Law Dome Ice Core
+1895,296.0,Law Dome Ice Core
+1896,295.9,Law Dome Ice Core
+1897,295.9,Law Dome Ice Core
+1898,295.8,Law Dome Ice Core
+1899,295.8,Law Dome Ice Core
 1900,295.7,Law Dome Ice Core
+1901,296.0,Law Dome Ice Core
+1902,296.2,Law Dome Ice Core
+1903,296.5,Law Dome Ice Core
+1904,296.7,Law Dome Ice Core
+1905,297.0,Law Dome Ice Core
+1906,297.5,Law Dome Ice Core
+1907,298.0,Law Dome Ice Core
+1908,298.5,Law Dome Ice Core
+1909,299.0,Law Dome Ice Core
 1910,299.5,Law Dome Ice Core
+1911,299.8,Law Dome Ice Core
+1912,300.1,Law Dome Ice Core
+1913,300.4,Law Dome Ice Core
+1914,300.7,Law Dome Ice Core
+1915,301.0,Law Dome Ice Core
+1916,301.5,Law Dome Ice Core
+1917,302.0,Law Dome Ice Core
+1918,302.5,Law Dome Ice Core
+1919,303.0,Law Dome Ice Core
 1920,303.5,Law Dome Ice Core
+1921,303.8,Law Dome Ice Core
+1922,304.1,Law Dome Ice Core
+1923,304.4,Law Dome Ice Core
+1924,304.7,Law Dome Ice Core
+1925,305.0,Law Dome Ice Core
+1926,305.4,Law Dome Ice Core
+1927,305.7,Law Dome Ice Core
+1928,306.1,Law Dome Ice Core
+1929,306.4,Law Dome Ice Core
 1930,306.8,Law Dome Ice Core
+1931,307.2,Law Dome Ice Core
+1932,307.7,Law Dome Ice Core
+1933,308.1,Law Dome Ice Core
+1934,308.6,Law Dome Ice Core
+1935,309.0,Law Dome Ice Core
+1936,309.4,Law Dome Ice Core
+1937,309.7,Law Dome Ice Core
+1938,310.1,Law Dome Ice Core
+1939,310.4,Law Dome Ice Core
 1940,310.8,Law Dome Ice Core
+1941,310.7,Law Dome Ice Core
+1942,310.5,Law Dome Ice Core
+1943,310.4,Law Dome Ice Core
+1944,310.2,Law Dome Ice Core
+1945,310.1,Law Dome Ice Core
+1946,310.3,Law Dome Ice Core
+1947,310.6,Law Dome Ice Core
+1948,310.8,Law Dome Ice Core
+1949,311.1,Law Dome Ice Core
 1950,311.3,Law Dome Ice Core
-1958,315.3,Mauna Loa / NOAA GML
-1960,316.9,Mauna Loa / NOAA GML
-1965,320.0,Mauna Loa / NOAA GML
-1970,325.7,Mauna Loa / NOAA GML
-1975,331.1,Mauna Loa / NOAA GML
-1980,338.8,Mauna Loa / NOAA GML
-1985,346.1,Mauna Loa / NOAA GML
-1990,354.4,Mauna Loa / NOAA GML
-1995,360.8,Mauna Loa / NOAA GML
-2000,369.5,Mauna Loa / NOAA GML
-2005,379.8,Mauna Loa / NOAA GML
-2010,389.9,Mauna Loa / NOAA GML
-2015,400.8,Mauna Loa / NOAA GML
-2020,414.2,Mauna Loa / NOAA GML
-2022,418.5,Mauna Loa / NOAA GML
-2024,425.8,Mauna Loa / NOAA GML
+1951,311.7,Law Dome Ice Core
+1952,312.1,Law Dome Ice Core
+1953,312.5,Law Dome Ice Core
+1954,312.9,Law Dome Ice Core
+1955,313.3,Law Dome Ice Core
+1956,314.2,Law Dome Ice Core
+1957,315.0,Law Dome Ice Core
+1959,315.98,Mauna Loa / NOAA GML
+1960,316.91,Mauna Loa / NOAA GML
+1961,317.64,Mauna Loa / NOAA GML
+1962,318.45,Mauna Loa / NOAA GML
+1963,318.99,Mauna Loa / NOAA GML
+1964,319.62,Mauna Loa / NOAA GML
+1965,320.04,Mauna Loa / NOAA GML
+1966,321.37,Mauna Loa / NOAA GML
+1967,322.18,Mauna Loa / NOAA GML
+1968,323.05,Mauna Loa / NOAA GML
+1969,324.62,Mauna Loa / NOAA GML
+1970,325.68,Mauna Loa / NOAA GML
+1971,326.32,Mauna Loa / NOAA GML
+1972,327.46,Mauna Loa / NOAA GML
+1973,329.68,Mauna Loa / NOAA GML
+1974,330.19,Mauna Loa / NOAA GML
+1975,331.13,Mauna Loa / NOAA GML
+1976,332.03,Mauna Loa / NOAA GML
+1977,333.84,Mauna Loa / NOAA GML
+1978,335.41,Mauna Loa / NOAA GML
+1979,336.84,Mauna Loa / NOAA GML
+1980,338.76,Mauna Loa / NOAA GML
+1981,340.12,Mauna Loa / NOAA GML
+1982,341.48,Mauna Loa / NOAA GML
+1983,343.15,Mauna Loa / NOAA GML
+1984,344.87,Mauna Loa / NOAA GML
+1985,346.35,Mauna Loa / NOAA GML
+1986,347.61,Mauna Loa / NOAA GML
+1987,349.31,Mauna Loa / NOAA GML
+1988,351.69,Mauna Loa / NOAA GML
+1989,353.2,Mauna Loa / NOAA GML
+1990,354.45,Mauna Loa / NOAA GML
+1991,355.7,Mauna Loa / NOAA GML
+1992,356.54,Mauna Loa / NOAA GML
+1993,357.21,Mauna Loa / NOAA GML
+1994,358.96,Mauna Loa / NOAA GML
+1995,360.97,Mauna Loa / NOAA GML
+1996,362.74,Mauna Loa / NOAA GML
+1997,363.88,Mauna Loa / NOAA GML
+1998,366.84,Mauna Loa / NOAA GML
+1999,368.54,Mauna Loa / NOAA GML
+2000,369.71,Mauna Loa / NOAA GML
+2001,371.32,Mauna Loa / NOAA GML
+2002,373.45,Mauna Loa / NOAA GML
+2003,375.98,Mauna Loa / NOAA GML
+2004,377.7,Mauna Loa / NOAA GML
+2005,379.98,Mauna Loa / NOAA GML
+2006,382.09,Mauna Loa / NOAA GML
+2007,384.02,Mauna Loa / NOAA GML
+2008,385.83,Mauna Loa / NOAA GML
+2009,387.64,Mauna Loa / NOAA GML
+2010,390.1,Mauna Loa / NOAA GML
+2011,391.85,Mauna Loa / NOAA GML
+2012,394.06,Mauna Loa / NOAA GML
+2013,396.74,Mauna Loa / NOAA GML
+2014,398.81,Mauna Loa / NOAA GML
+2015,401.01,Mauna Loa / NOAA GML
+2016,404.41,Mauna Loa / NOAA GML
+2017,406.76,Mauna Loa / NOAA GML
+2018,408.72,Mauna Loa / NOAA GML
+2019,411.65,Mauna Loa / NOAA GML
+2020,414.21,Mauna Loa / NOAA GML
+2021,416.41,Mauna Loa / NOAA GML
+2022,418.53,Mauna Loa / NOAA GML
+2023,421.08,Mauna Loa / NOAA GML
+2024,424.61,Mauna Loa / NOAA GML
+2025,427.35,Mauna Loa / NOAA GML
